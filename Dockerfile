@@ -44,8 +44,11 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules ./node_modules
 
-# Create uploads directory
-RUN mkdir -p uploads && chown nextjs:nodejs uploads
+# Create uploads directory in public with proper permissions
+RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
+
+# Create uploads directory for persistent storage
+RUN mkdir -p uploads && chown -R nextjs:nodejs uploads
 
 USER nextjs
 

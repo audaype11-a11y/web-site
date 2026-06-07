@@ -46,13 +46,15 @@ export async function POST(request: NextRequest) {
     const safeExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext) ? ext : ".png";
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    // Use uploads folder in root (persists on Railway volume)
+    const uploadDir = path.join(process.cwd(), "uploads");
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
     await writeFile(filePath, buffer);
 
-    const url = `/uploads/${uniqueName}`;
+    // Return URL that will be served by the API
+    const url = `/api/files/${uniqueName}`;
 
     return NextResponse.json({ url, name: uniqueName });
   } catch (error) {
