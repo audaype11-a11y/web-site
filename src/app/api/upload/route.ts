@@ -8,6 +8,11 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Upload directory - use /tmp for Railway compatibility
+const getUploadDir = () => {
+  return process.env.UPLOAD_DIR || path.join("/tmp", "uploads");
+};
+
 // POST /api/upload - Upload an image (admin only)
 export async function POST(request: NextRequest) {
   try {
@@ -46,8 +51,8 @@ export async function POST(request: NextRequest) {
     const safeExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext) ? ext : ".png";
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
-    // Use uploads folder in root (persists on Railway volume)
-    const uploadDir = path.join(process.cwd(), "uploads");
+    // Use /tmp/uploads for Railway compatibility
+    const uploadDir = getUploadDir();
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);

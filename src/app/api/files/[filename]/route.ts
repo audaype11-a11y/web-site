@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile, stat } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-const UPLOAD_DIR = path.join(process.cwd(), "uploads");
+// Upload directory - use /tmp for Railway compatibility
+const getUploadDir = () => {
+  return process.env.UPLOAD_DIR || path.join("/tmp", "uploads");
+};
 
 // GET /api/files/[filename] - Serve uploaded files
 export async function GET(
@@ -15,7 +18,8 @@ export async function GET(
 
     // Security: prevent directory traversal
     const safeName = path.basename(filename);
-    const filePath = path.join(UPLOAD_DIR, safeName);
+    const uploadDir = getUploadDir();
+    const filePath = path.join(uploadDir, safeName);
 
     // Check if file exists
     if (!existsSync(filePath)) {
