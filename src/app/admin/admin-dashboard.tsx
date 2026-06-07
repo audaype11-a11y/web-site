@@ -89,6 +89,12 @@ export function AdminDashboard({ stats, recentPosts, userName }: AdminDashboardP
               التصنيفات
             </Button>
           </Link>
+          <Link href="/admin/settings">
+            <Button variant="ghost" size="sm" className="gap-1">
+              <Settings className="h-3.5 w-3.5" />
+              الإعدادات
+            </Button>
+          </Link>
         </div>
 
         {/* Stats Cards */}

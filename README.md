@@ -8,8 +8,12 @@
 - نظام إدارة محتوى متكامل
 - دعم الوضع الداكن
 - محرر Markdown متقدم
-- SEO محسن
+- SEO محسن (Sitemap, Robots.txt, Meta tags)
 - تصميم متجاوب
+- صفحة "عني" قابلة للتخصيص
+- روابط تواصل اجتماعي من ملف .env
+- عداد مشاهدات المقالات
+- نظام أمان متكامل
 
 ## 🛠️ التقنيات
 
@@ -25,6 +29,9 @@
 # نسخ المتغيرات البيئية
 cp .env.example .env
 
+# تعديل المتغيرات
+# أضف روابط التواصل الاجتماعي ومعلومات الاتصال
+
 # تثبيت التبعيات
 bun install
 
@@ -38,33 +45,42 @@ bun run db:migrate
 bun run dev
 \`\`\`
 
-## 🔐 بيانات الدخول
+## 🔐 الإعداد الأولي
 
-- **البريد**: admin@medblog.com
-- **كلمة المرور**: admin123
+بعد النشر، افتح:
+\`\`\`
+https://your-domain.com/api/setup?secret=YOUR_SETUP_SECRET
+\`\`\`
+
+سيعمل على:
+- إنشاء حساب الأدمن
+- إنشاء التصنيفات الافتراضية
+
+## 📱 روابط التواصل الاجتماعي
+
+أضف هذه المتغيرات في `.env`:
+\`\`\`
+TWITTER_URL="https://twitter.com/yourusername"
+INSTAGRAM_URL="https://instagram.com/yourusername"
+YOUTUBE_URL="https://youtube.com/@yourusername"
+TELEGRAM_URL="https://t.me/yourusername"
+WHATSAPP_URL="https://wa.me/966500000000"
+\`\`\`
 
 ## 🚀 النشر على Railway
 
-### 1. إنشاء مشروع جديد
-\`\`\`
-railway init
-\`\`\`
-
-### 2. إضافة PostgreSQL
-\`\`\`
-railway add --database postgres
-\`\`\`
-
-### 3. تعيين المتغيرات البيئية
-\`\`\`
-railway variables set NEXTAUTH_SECRET=your-secret-key
-railway variables set NEXTAUTH_URL=https://your-app.up.railway.app
-\`\`\`
-
-### 4. النشر
-\`\`\`
-railway up
-\`\`\`
+### المتغيرات المطلوبة:
+| المتغير | الوصف |
+|---------|-------|
+| `DATABASE_URL` | رابط PostgreSQL (تلقائي من Railway) |
+| `DIRECT_DATABASE_URL` | نفس قيمة DATABASE_URL |
+| `NEXTAUTH_SECRET` | مفتاح سري (32 حرف+) |
+| `NEXTAUTH_URL` | رابط موقعك الكامل |
+| `SETUP_SECRET` | مفتاح الإعداد الأولي |
+| `TWITTER_URL` | رابط تويتر (اختياري) |
+| `INSTAGRAM_URL` | رابط انستغرام (اختياري) |
+| `YOUTUBE_URL` | رابط يوتيوب (اختياري) |
+| `TELEGRAM_URL` | رابط تيليجرام (اختياري) |
 
 ## 📁 هيكل المشروع
 
@@ -72,12 +88,21 @@ railway up
 ├── prisma/           # قاعدة البيانات
 ├── src/
 │   ├── app/          # صفحات التطبيق
+│   │   ├── admin/    # لوحة التحكم
+│   │   ├── api/      # API Routes
+│   │   └── about/    # صفحة عن المدونة
 │   ├── components/   # المكونات
-│   ├── lib/          # المكتبات
-│   └── hooks/        # React Hooks
+│   └── lib/          # المكتبات
 ├── public/           # الملفات الثابتة
 └── Dockerfile        # ملف Docker
 \`\`\`
+
+## 🔒 الأمان
+
+- API Upload محمي بالمصادقة
+- التحقق من أنواع الملفات
+- حماية صفحة الإعداد بمفتاح سري
+- منع الوصول لـ /admin من محركات البحث
 
 ## 📝 الترخيص
 

@@ -41,6 +41,7 @@ model Post {
   metaTitle       String?
   metaDescription String?
   published       Boolean   @default(false)
+  views           Int       @default(0)
   authorId        String
   categoryId      String?
   createdAt       DateTime  @default(now())

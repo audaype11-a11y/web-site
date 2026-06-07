@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 const navLinks = [
   { href: "/", label: "الرئيسية" },
   { href: "/articles", label: "المقالات" },
+  { href: "/about", label: "عني" },
 ];
 
 export function Navbar() {
