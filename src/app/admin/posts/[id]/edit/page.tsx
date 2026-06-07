@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { PostEditor } from "../../post-editor";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface EditPostPageProps {
   params: Promise<{ id: string }>;
 }

@@ -5,6 +5,9 @@ import { CategoryFilter } from "@/components/blog/category-filter";
 import { BookOpen } from "lucide-react";
 import { ArticlesClient } from "./articles-client";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "المقالات",
   description: "تصفح جميع المقالات الطبية والملاحظات الدراسية",

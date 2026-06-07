@@ -14,6 +14,9 @@ import {
   FileText,
 } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 const categoryIcons: Record<string, React.ReactNode> = {
   "طب عام": <HeartPulse className="h-5 w-5" />,
   "تشريح": <BookOpen className="h-5 w-5" />,

@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { AdminCategories } from "./admin-categories";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 export default async function AdminCategoriesPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/admin/login");

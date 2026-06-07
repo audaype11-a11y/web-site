@@ -9,6 +9,9 @@ import { ArticleCard } from "@/components/blog/article-card";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+// Force dynamic rendering
+export const dynamic = "force-dynamic";
+
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
 }
