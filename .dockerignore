@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+*.log
+.env
+.env.local
+.env.production
+db/*.db
+db/*.db-journal
+.git
+.gitignore
+.vscode
+*.md
+uploads

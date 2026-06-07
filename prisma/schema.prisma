@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String
+  image         String?
+  role          String    @default("admin")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  posts         Post[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String   @default("#0ea5e9")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  posts       Post[]
+}
+
+model Post {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  content         String?
+  excerpt         String?
+  coverImage      String?
+  metaTitle       String?
+  metaDescription String?
+  published       Boolean   @default(false)
+  authorId        String
+  categoryId      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  author          User      @relation(fields: [authorId], references: [id])
+  category        Category? @relation(fields: [categoryId], references: [id])
+}
+
+model SiteConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  updatedAt   DateTime @updatedAt
+}
