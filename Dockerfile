@@ -33,6 +33,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN groupadd --system --gid 1001 nodejs
 RUN useradd --system --uid 1001 --gid nodejs nextjs
 
+# Create uploads directory BEFORE copying files
+RUN mkdir -p /app/uploads && chown -R nextjs:nodejs /app/uploads
+
 # Copy built files
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
@@ -43,12 +46,6 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules ./node_modules
-
-# Create uploads directory in public with proper permissions
-RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
-
-# Create uploads directory for persistent storage
-RUN mkdir -p uploads && chown -R nextjs:nodejs uploads
 
 USER nextjs
 
