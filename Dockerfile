@@ -54,5 +54,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run db push, seed and start server
-CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bunx prisma db seed && bun server.js"]
+# Run db push and start server
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bun server.js"]
