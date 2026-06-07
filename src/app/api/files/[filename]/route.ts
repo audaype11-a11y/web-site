@@ -3,16 +3,17 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-// Upload directory - use /tmp for Railway compatibility, or local uploads folder
+// Upload directory
 const getUploadDir = () => {
+  // Use custom path if set
   if (process.env.UPLOAD_DIR) {
     return process.env.UPLOAD_DIR;
   }
-  // For Railway/production, use /tmp
-  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT) {
-    return path.join("/tmp", "uploads");
+  // Use /tmp for production (Railway, etc.)
+  if (process.env.NODE_ENV === "production") {
+    return "/tmp/uploads";
   }
-  // For local development, use uploads folder in project root
+  // Use local uploads folder for development
   return path.join(process.cwd(), "uploads");
 };
 

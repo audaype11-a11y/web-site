@@ -8,17 +8,19 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory - use /tmp for Railway compatibility, or local uploads folder
+// Upload directory
 const getUploadDir = () => {
+  // Use custom path if set
   if (process.env.UPLOAD_DIR) {
     return process.env.UPLOAD_DIR;
   }
-  // For Railway/production, use /tmp
-  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT) {
-    return path.join("/tmp", "uploads");
+  // Use /tmp for production (Railway, etc.)
+  if (process.env.NODE_ENV === "production") {
+    return "/tmp/uploads";
   }
-  // For local development, use uploads folder in project root
-  return path.join(process.cwd(), "uploads");
+  // Use local uploads folder for development
+  const dir = path.join(process.cwd(), "uploads");
+  return dir;
 };
 
 // POST /api/upload - Upload an image (admin only)
@@ -59,11 +61,12 @@ export async function POST(request: NextRequest) {
     const safeExt = [".jpg", ".jpeg", ".png", ".gif", ".webp"].includes(ext) ? ext : ".png";
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
-    // Use /tmp/uploads for Railway compatibility
     const uploadDir = getUploadDir();
+    console.log("Upload directory:", uploadDir);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
+    console.log("File path:", filePath);
     await writeFile(filePath, buffer);
 
     // Return URL that will be served by the API
