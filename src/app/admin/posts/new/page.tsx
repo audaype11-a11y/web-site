@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { PostEditor } from "./post-editor";
+import { PostEditor } from "../post-editor";
 
 export default async function NewPostPage() {
   const session = await getServerSession(authOptions);
