@@ -8,9 +8,17 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory - use /tmp for Railway compatibility
+// Upload directory - use /tmp for Railway compatibility, or local uploads folder
 const getUploadDir = () => {
-  return process.env.UPLOAD_DIR || path.join("/tmp", "uploads");
+  if (process.env.UPLOAD_DIR) {
+    return process.env.UPLOAD_DIR;
+  }
+  // For Railway/production, use /tmp
+  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT) {
+    return path.join("/tmp", "uploads");
+  }
+  // For local development, use uploads folder in project root
+  return path.join(process.cwd(), "uploads");
 };
 
 // POST /api/upload - Upload an image (admin only)
