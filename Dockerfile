@@ -4,12 +4,11 @@ WORKDIR /app
 
 # Install dependencies stage
 FROM base AS deps
+# Copy package files first
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile
-
-# Copy prisma schema and generate client
+# Copy prisma schema before install (needed for postinstall)
 COPY prisma ./prisma/
-RUN bunx prisma generate
+RUN bun install --frozen-lockfile
 
 # Builder stage
 FROM base AS builder
