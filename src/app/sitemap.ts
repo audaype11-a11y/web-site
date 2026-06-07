@@ -1,34 +1,9 @@
 import { MetadataRoute } from "next";
-import { db } from "@/lib/db";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXTAUTH_URL || "https://example.com";
 
-  // Get all published posts
-  const posts = await db.post.findMany({
-    where: { published: true },
-    select: { slug: true, updatedAt: true },
-  });
-
-  // Get all categories
-  const categories = await db.category.findMany({
-    select: { slug: true },
-  });
-
-  const postUrls = posts.map((post) => ({
-    url: `${baseUrl}/articles/${post.slug}`,
-    lastModified: post.updatedAt,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
-
-  const categoryUrls = categories.map((cat) => ({
-    url: `${baseUrl}/articles?category=${cat.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.6,
-  }));
-
+  // Static pages only - dynamic pages are handled at runtime
   return [
     {
       url: baseUrl,
@@ -48,7 +23,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.5,
     },
-    ...postUrls,
-    ...categoryUrls,
   ];
 }
