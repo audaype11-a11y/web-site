@@ -8,24 +8,12 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory
+// Upload directory - hardcoded for Railway
 const getUploadDir = (): string => {
-  // Custom path takes priority
-  const customDir = process.env.UPLOAD_DIR;
-  if (customDir) return customDir;
-  
-  // Production: always use /tmp/uploads
-  if (process.env.NODE_ENV === "production") return "/tmp/uploads";
-  
-  // Check for Railway deployment
-  if (process.env.RAILWAY || 
-      process.env.RAILWAY_PROJECT_ID || 
-      process.env.RAILWAY_SERVICE_NAME ||
-      process.env.RAILWAY_ENVIRONMENT_NAME ||
-      process.env.RAILWAY_STATIC_URL) {
+  // Always use /tmp/uploads in production
+  if (process.env.NODE_ENV === "production") {
     return "/tmp/uploads";
   }
-  
   // Development: local uploads folder
   return path.join(process.cwd(), "uploads");
 };
@@ -69,6 +57,7 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
     const uploadDir = getUploadDir();
+    console.log("Upload dir:", uploadDir, "NODE_ENV:", process.env.NODE_ENV);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
