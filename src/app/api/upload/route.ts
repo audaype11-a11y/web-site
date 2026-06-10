@@ -8,17 +8,16 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory - uses UPLOAD_DIR env var if set
+// Upload directory
 const getUploadDir = (): string => {
-  // Use custom path from env var (set in Dockerfile)
-  if (process.env.UPLOAD_DIR) {
-    return process.env.UPLOAD_DIR;
-  }
-  // Fallback: production uses /tmp/uploads
+  // Production always uses /tmp/uploads (ignore any env var)
   if (process.env.NODE_ENV === "production") {
     return "/tmp/uploads";
   }
-  // Development: local uploads folder
+  // Development: use UPLOAD_DIR if set, otherwise local folder
+  if (process.env.UPLOAD_DIR && !process.env.UPLOAD_DIR.startsWith(".")) {
+    return process.env.UPLOAD_DIR;
+  }
   return path.join(process.cwd(), "uploads");
 };
 
