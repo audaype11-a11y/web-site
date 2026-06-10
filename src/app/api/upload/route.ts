@@ -60,11 +60,9 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
     const uploadDir = getUploadDir();
-    console.log("Upload directory:", uploadDir, "NODE_ENV:", process.env.NODE_ENV);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
-    console.log("Writing to:", filePath, "Size:", buffer.length);
     await writeFile(filePath, buffer);
 
     // Return URL that will be served by the API

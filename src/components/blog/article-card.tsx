@@ -36,15 +36,15 @@ export function ArticleCard({ post }: ArticleCardProps) {
       <Card className="group overflow-hidden h-full hover:shadow-lg transition-all duration-300 border-border/50 hover:border-emerald-200 dark:hover:border-emerald-800">
         {/* Cover Image */}
         {post.coverImage ? (
-          <div className="aspect-video overflow-hidden bg-muted">
+          <div className="overflow-hidden bg-muted">
             <img
               src={post.coverImage}
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-auto group-hover:scale-105 transition-transform duration-300"
             />
           </div>
         ) : (
-          <div className="aspect-video bg-gradient-to-br from-sky-100 to-emerald-100 dark:from-sky-950 dark:to-emerald-950 flex items-center justify-center">
+          <div className="h-48 bg-gradient-to-br from-sky-100 to-emerald-100 dark:from-sky-950 dark:to-emerald-950 flex items-center justify-center">
             <span className="text-4xl opacity-30">🏥</span>
           </div>
         )}

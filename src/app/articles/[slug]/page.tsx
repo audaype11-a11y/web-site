@@ -101,11 +101,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Cover Image */}
           {post.coverImage && (
-            <div className="aspect-video rounded-xl overflow-hidden mb-8 bg-muted">
+            <div className="rounded-xl overflow-hidden mb-8 bg-muted">
               <img
                 src={post.coverImage}
                 alt={post.title}
-                className="w-full h-full object-cover"
+                className="w-full h-auto"
               />
             </div>
           )}

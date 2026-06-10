@@ -304,7 +304,7 @@ export function PostEditor({ categories, userId, post }: PostEditorProps) {
                     <img
                       src={coverImage}
                       alt="صورة الغلاف"
-                      className="w-full aspect-video object-cover"
+                      className="w-full h-auto"
                     />
                     <Button
                       variant="destructive"

@@ -31,13 +31,11 @@ export async function GET(
 
     // Check if file exists
     if (!existsSync(filePath)) {
-      console.log("File not found:", filePath);
       return new NextResponse("File not found", { status: 404 });
     }
 
     // Read file
     const fileBuffer = await readFile(filePath);
-    console.log("Serving file:", safeName, "Size:", fileBuffer.length);
 
     // Determine content type
     const ext = path.extname(safeName).toLowerCase();
