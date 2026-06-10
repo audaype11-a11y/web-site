@@ -9,12 +9,13 @@ const getUploadDir = () => {
   if (process.env.UPLOAD_DIR) {
     return process.env.UPLOAD_DIR;
   }
-  // Use /tmp for production (Railway, etc.)
-  if (process.env.NODE_ENV === "production") {
+  // Use /tmp for production or Railway
+  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
     return "/tmp/uploads";
   }
   // Use local uploads folder for development
-  return path.join(process.cwd(), "uploads");
+  const dir = path.join(process.cwd(), "uploads");
+  return dir;
 };
 
 // GET /api/files/[filename] - Serve uploaded files

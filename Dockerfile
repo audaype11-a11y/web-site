@@ -34,7 +34,7 @@ RUN groupadd --system --gid 1001 nodejs
 RUN useradd --system --uid 1001 --gid nodejs nextjs
 
 # Create uploads directory BEFORE copying files
-RUN mkdir -p /app/uploads && chown -R nextjs:nodejs /app/uploads
+RUN mkdir -p /tmp/uploads && chown -R nextjs:nodejs /tmp/uploads
 
 # Copy built files
 COPY --from=builder /app/public ./public

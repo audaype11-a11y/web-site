@@ -14,8 +14,8 @@ const getUploadDir = () => {
   if (process.env.UPLOAD_DIR) {
     return process.env.UPLOAD_DIR;
   }
-  // Use /tmp for production (Railway, etc.)
-  if (process.env.NODE_ENV === "production") {
+  // Use /tmp for production or Railway
+  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
     return "/tmp/uploads";
   }
   // Use local uploads folder for development
@@ -62,11 +62,9 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
     const uploadDir = getUploadDir();
-    console.log("Upload directory:", uploadDir);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
-    console.log("File path:", filePath);
     await writeFile(filePath, buffer);
 
     // Return URL that will be served by the API
