@@ -5,9 +5,9 @@ import { existsSync } from "fs";
 
 // Upload directory
 const getUploadDir = (): string => {
-  // Production always uses /tmp/uploads (ignore any env var)
+  // Production uses /app/uploads (Railway doesn't mount here)
   if (process.env.NODE_ENV === "production") {
-    return "/tmp/uploads";
+    return "/app/uploads";
   }
   // Development: use UPLOAD_DIR if set, otherwise local folder
   if (process.env.UPLOAD_DIR && !process.env.UPLOAD_DIR.startsWith(".")) {

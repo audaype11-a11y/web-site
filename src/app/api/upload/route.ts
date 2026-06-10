@@ -10,9 +10,9 @@ const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 // Upload directory
 const getUploadDir = (): string => {
-  // Production always uses /tmp/uploads (ignore any env var)
+  // Production uses /app/uploads (Railway doesn't mount here)
   if (process.env.NODE_ENV === "production") {
-    return "/tmp/uploads";
+    return "/app/uploads";
   }
   // Development: use UPLOAD_DIR if set, otherwise local folder
   if (process.env.UPLOAD_DIR && !process.env.UPLOAD_DIR.startsWith(".")) {
@@ -60,8 +60,7 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
     const uploadDir = getUploadDir();
-    console.log("Upload directory:", uploadDir);
-    console.log("UPLOAD_DIR env:", process.env.UPLOAD_DIR);
+    console.log("Upload directory:", uploadDir, "NODE_ENV:", process.env.NODE_ENV);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);
