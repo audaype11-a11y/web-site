@@ -8,29 +8,25 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory - always use /tmp/uploads on Railway for persistence
+// Upload directory
 const getUploadDir = (): string => {
-  // Use custom path if set
+  // Custom path takes priority
   const customDir = process.env.UPLOAD_DIR;
-  if (customDir) {
-    return customDir;
-  }
+  if (customDir) return customDir;
   
-  // Check for Railway environment variables
-  const isRailway = Boolean(
-    process.env.RAILWAY_PROJECT_ID ||
-    process.env.RAILWAY_ENVIRONMENT ||
-    process.env.RAILWAY_STATIC_URL ||
-    process.env.RAILWAY_SERVICE_ID ||
-    process.env.RAILWAY
-  );
+  // Production: always use /tmp/uploads
+  if (process.env.NODE_ENV === "production") return "/tmp/uploads";
   
-  // Use /tmp for Railway or production
-  if (isRailway || process.env.NODE_ENV === "production") {
+  // Check for Railway deployment
+  if (process.env.RAILWAY || 
+      process.env.RAILWAY_PROJECT_ID || 
+      process.env.RAILWAY_SERVICE_NAME ||
+      process.env.RAILWAY_ENVIRONMENT_NAME ||
+      process.env.RAILWAY_STATIC_URL) {
     return "/tmp/uploads";
   }
   
-  // Use local uploads folder for development
+  // Development: local uploads folder
   return path.join(process.cwd(), "uploads");
 };
 
