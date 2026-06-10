@@ -8,19 +8,30 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory
-const getUploadDir = () => {
+// Upload directory - always use /tmp/uploads on Railway for persistence
+const getUploadDir = (): string => {
   // Use custom path if set
-  if (process.env.UPLOAD_DIR) {
-    return process.env.UPLOAD_DIR;
+  const customDir = process.env.UPLOAD_DIR;
+  if (customDir) {
+    return customDir;
   }
-  // Use /tmp for production or Railway
-  if (process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL) {
+  
+  // Check for Railway environment variables
+  const isRailway = Boolean(
+    process.env.RAILWAY_PROJECT_ID ||
+    process.env.RAILWAY_ENVIRONMENT ||
+    process.env.RAILWAY_STATIC_URL ||
+    process.env.RAILWAY_SERVICE_ID ||
+    process.env.RAILWAY
+  );
+  
+  // Use /tmp for Railway or production
+  if (isRailway || process.env.NODE_ENV === "production") {
     return "/tmp/uploads";
   }
+  
   // Use local uploads folder for development
-  const dir = path.join(process.cwd(), "uploads");
-  return dir;
+  return path.join(process.cwd(), "uploads");
 };
 
 // POST /api/upload - Upload an image (admin only)
