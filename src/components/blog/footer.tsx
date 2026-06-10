@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Stethoscope, Heart } from "lucide-react";
+import Image from "next/image";
+import { Heart } from "lucide-react";
 import { socialLinks, contactInfo, hasSocialLinks } from "@/lib/social-links";
+import { site, footer as footerConfig } from "@/lib/site-config";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -12,12 +14,17 @@ export function Footer() {
           {/* About */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 font-bold text-lg mb-3">
-              <Stethoscope className="h-5 w-5 text-emerald-600" />
-              <span>مدونة الطبيب</span>
+              <Image 
+                src={site.logo} 
+                alt={site.name} 
+                width={24} 
+                height={24}
+                className="h-6 w-6"
+              />
+              <span>{site.name}</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              مدونة شخصية لطالب طب بشري، أشارك فيها تجربتي وملاحظاتي الطبية
-              ومقالات تثقيفية في مجال الطب والصحة.
+              {footerConfig.aboutText}
             </p>
             {/* Contact Info */}
             {contactInfo.email && (
@@ -31,21 +38,13 @@ export function Footer() {
           <div>
             <h3 className="font-semibold mb-3">روابط سريعة</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <Link href="/" className="hover:text-foreground transition-colors">
-                  الرئيسية
-                </Link>
-              </li>
-              <li>
-                <Link href="/articles" className="hover:text-foreground transition-colors">
-                  المقالات
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="hover:text-foreground transition-colors">
-                  عن المدونة
-                </Link>
-              </li>
+              {footerConfig.quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="hover:text-foreground transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -139,9 +138,7 @@ export function Footer() {
 
         <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
           <p className="flex items-center justify-center gap-1">
-            © {currentYear} مدونة الطبيب. صنع بـ
-            <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" />
-            لطلاب الطب
+            © {currentYear} {site.name}. {footerConfig.copyright}
           </p>
         </div>
       </div>

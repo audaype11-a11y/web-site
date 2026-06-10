@@ -1,0 +1,41 @@
+{
+  "site": {
+    "name": "مدونة الطبيب",
+    "description": "مدونة شخصية لطالب طب بشري - مقالات طبية، ملاحظات دراسية، ونصائح صحية",
+    "keywords": ["طب", "طب بشري", "مقالات طبية", "صحة", "طالب طب", "مدونة طبية"],
+    "author": "مدونة الطبيب",
+    "logo": "/logo.svg"
+  },
+  "links": {
+    "home": "/",
+    "articles": "/articles",
+    "about": "/about",
+    "admin": "/admin/login"
+  },
+  "navLinks": [
+    { "href": "/", "label": "الرئيسية" },
+    { "href": "/articles", "label": "المقالات" },
+    { "href": "/about", "label": "عني" },
+    { "href": "/admin/login", "label": "لوحة التحكم" }
+  ],
+  "footer": {
+    "aboutText": "مدونة شخصية لطالب طب بشري، أشارك فيها تجربتي وملاحظاتي الطبية ومقالات تثقيفية في مجال الطب والصحة.",
+    "quickLinks": [
+      { "href": "/", "label": "الرئيسية" },
+      { "href": "/articles", "label": "المقالات" },
+      { "href": "/about", "label": "عنا" }
+    ],
+    "copyright": "صنع بـ ❤️ لطلاب الطب"
+  },
+  "social": {
+    "twitter": "",
+    "instagram": "",
+    "youtube": "",
+    "telegram": "",
+    "whatsapp": "",
+    "linkedin": ""
+  },
+  "contact": {
+    "email": ""
+  }
+}

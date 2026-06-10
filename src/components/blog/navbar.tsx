@@ -1,16 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
-import { Moon, Sun, Menu, X, Stethoscope } from "lucide-react";
+import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const navLinks = [
-  { href: "/", label: "الرئيسية" },
-  { href: "/articles", label: "المقالات" },
-  { href: "/about", label: "عني" },
-];
+import { navLinks, site } from "@/lib/site-config";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -26,8 +22,14 @@ export function Navbar() {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
-          <Stethoscope className="h-6 w-6 text-emerald-600" />
-          <span>مدونة الطبيب</span>
+          <Image 
+            src={site.logo} 
+            alt={site.name} 
+            width={28} 
+            height={28}
+            className="h-7 w-7"
+          />
+          <span>{site.name}</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -41,12 +43,6 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/admin/login"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            لوحة التحكم
-          </Link>
         </nav>
 
         {/* Actions */}
@@ -93,13 +89,6 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/admin/login"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground py-2 transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              لوحة التحكم
-            </Link>
           </nav>
         </div>
       )}

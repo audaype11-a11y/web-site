@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import { Navbar } from "@/components/blog/navbar";
 import { Footer } from "@/components/blog/footer";
+import { site } from "@/lib/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,26 +20,23 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "مدونة الطبيب | مدونة طبية شخصية",
-    template: "%s | مدونة الطبيب",
+    default: `${site.site.name} | ${site.site.description.split(" - ")[0]}`,
+    template: `%s | ${site.site.name}`,
   },
-  description:
-    "مدونة شخصية لطالب طب بشري - مقالات طبية، ملاحظات دراسية، ونصائح صحية",
-  keywords: [
-    "طب",
-    "طب بشري",
-    "مقالات طبية",
-    "صحة",
-    "طالب طب",
-    "مدونة طبية",
-  ],
-  authors: [{ name: "مدونة الطبيب" }],
+  description: site.site.description,
+  keywords: site.site.keywords,
+  authors: [{ name: site.site.author }],
+  icons: {
+    icon: site.site.logo,
+    apple: site.site.logo,
+  },
   openGraph: {
-    title: "مدونة الطبيب | مدونة طبية شخصية",
-    description: "مدونة شخصية لطالب طب بشري - مقالات طبية، ملاحظات دراسية، ونصائح صحية",
+    title: `${site.site.name} | ${site.site.description.split(" - ")[0]}`,
+    description: site.site.description,
     type: "website",
     locale: "ar_SA",
     dir: "rtl",
+    siteName: site.site.name,
   },
 };
 
