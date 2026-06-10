@@ -33,8 +33,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN groupadd --system --gid 1001 nodejs
 RUN useradd --system --uid 1001 --gid nodejs nextjs
 
-# Create uploads directory BEFORE copying files
-RUN mkdir -p /tmp/uploads && chown -R nextjs:nodejs /tmp/uploads
+# Create uploads directory
+RUN mkdir -p /tmp/uploads && chmod 777 /tmp/uploads
 
 # Copy built files
 COPY --from=builder /app/public ./public
