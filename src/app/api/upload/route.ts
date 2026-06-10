@@ -8,9 +8,13 @@ import { authOptions } from "@/lib/auth";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-// Upload directory - hardcoded for Railway
+// Upload directory - uses UPLOAD_DIR env var if set
 const getUploadDir = (): string => {
-  // Always use /tmp/uploads in production
+  // Use custom path from env var (set in Dockerfile)
+  if (process.env.UPLOAD_DIR) {
+    return process.env.UPLOAD_DIR;
+  }
+  // Fallback: production uses /tmp/uploads
   if (process.env.NODE_ENV === "production") {
     return "/tmp/uploads";
   }
@@ -57,7 +61,6 @@ export async function POST(request: NextRequest) {
     const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}${safeExt}`;
 
     const uploadDir = getUploadDir();
-    console.log("Upload dir:", uploadDir, "NODE_ENV:", process.env.NODE_ENV);
     await mkdir(uploadDir, { recursive: true });
 
     const filePath = path.join(uploadDir, uniqueName);

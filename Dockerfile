@@ -28,6 +28,7 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV UPLOAD_DIR=/tmp/uploads
 
 # Create non-root user (Debian/Ubuntu style)
 RUN groupadd --system --gid 1001 nodejs

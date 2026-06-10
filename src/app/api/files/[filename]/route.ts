@@ -3,9 +3,13 @@ import { readFile } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-// Upload directory - hardcoded for Railway
+// Upload directory - uses UPLOAD_DIR env var if set
 const getUploadDir = (): string => {
-  // Always use /tmp/uploads in production
+  // Use custom path from env var (set in Dockerfile)
+  if (process.env.UPLOAD_DIR) {
+    return process.env.UPLOAD_DIR;
+  }
+  // Fallback: production uses /tmp/uploads
   if (process.env.NODE_ENV === "production") {
     return "/tmp/uploads";
   }
@@ -28,11 +32,13 @@ export async function GET(
 
     // Check if file exists
     if (!existsSync(filePath)) {
+      console.log("File not found:", filePath);
       return new NextResponse("File not found", { status: 404 });
     }
 
     // Read file
     const fileBuffer = await readFile(filePath);
+    console.log("Serving file:", safeName, "Size:", fileBuffer.length);
 
     // Determine content type
     const ext = path.extname(safeName).toLowerCase();
@@ -46,11 +52,14 @@ export async function GET(
 
     const contentType = contentTypes[ext] || "application/octet-stream";
 
-    // Return file with cache headers
+    // Return file with proper headers
     return new NextResponse(fileBuffer, {
+      status: 200,
       headers: {
         "Content-Type": contentType,
+        "Content-Length": fileBuffer.length.toString(),
         "Cache-Control": "public, max-age=31536000, immutable",
+        "Accept-Ranges": "bytes",
       },
     });
   } catch (error) {
