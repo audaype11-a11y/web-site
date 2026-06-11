@@ -4,9 +4,10 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { AuthProvider } from "@/providers/auth-provider";
-import { Navbar } from "@/components/blog/navbar";
-import { Footer } from "@/components/blog/footer";
-import { site } from "@/lib/site-config";
+import { DynamicNavbar } from "@/components/blog/dynamic-navbar";
+import { DynamicFooter } from "@/components/blog/dynamic-footer";
+import { getSiteConfig } from "@/lib/get-site-config";
+import { site, navLinks, footer } from "@/lib/site-config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,33 +19,52 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: `${site.site.name} | ${site.site.description.split(" - ")[0]}`,
-    template: `%s | ${site.site.name}`,
-  },
-  description: site.site.description,
-  keywords: site.site.keywords,
-  authors: [{ name: site.site.author }],
-  icons: {
-    icon: site.site.logo,
-    apple: site.site.logo,
-  },
-  openGraph: {
-    title: `${site.site.name} | ${site.site.description.split(" - ")[0]}`,
-    description: site.site.description,
-    type: "website",
-    locale: "ar_SA",
-    dir: "rtl",
-    siteName: site.site.name,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+  const siteName = config.site?.name || site.name;
+  const siteDesc = config.site?.description || site.description;
+  const siteLogo = config.site?.logo || site.logo;
 
-export default function RootLayout({
+  return {
+    title: {
+      default: `${siteName} | ${siteDesc.split(" - ")[0]}`,
+      template: `%s | ${siteName}`,
+    },
+    description: siteDesc,
+    keywords: config.site?.keywords || site.keywords,
+    authors: [{ name: config.site?.author || site.author }],
+    icons: {
+      icon: siteLogo,
+      apple: siteLogo,
+    },
+    openGraph: {
+      title: `${siteName} | ${siteDesc.split(" - ")[0]}`,
+      description: siteDesc,
+      type: "website",
+      locale: "ar_SA",
+      dir: "rtl",
+      siteName: siteName,
+    },
+  };
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const config = await getSiteConfig();
+  
+  const defaultConfig = {
+    site: config.site || site,
+    navLinks: navLinks,
+    footer: {
+      ...footer,
+      aboutText: config.footer?.aboutText || footer.aboutText,
+      copyright: config.footer?.copyright || footer.copyright,
+    }
+  };
+
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
@@ -53,9 +73,9 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthProvider>
             <div className="min-h-screen flex flex-col">
-              <Navbar />
+              <DynamicNavbar defaultConfig={defaultConfig} />
               <main className="flex-1">{children}</main>
-              <Footer />
+              <DynamicFooter defaultConfig={defaultConfig} />
             </div>
             <Toaster />
           </AuthProvider>

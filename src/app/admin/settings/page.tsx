@@ -1,21 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Key, User, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Loader2, Key, User, Mail, Globe, Heart } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(false);
+  const [savingSite, setSavingSite] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { toast } = useToast();
-  const router = useRouter();
+
+  // Site config state
+  const [siteName, setSiteName] = useState("");
+  const [siteDescription, setSiteDescription] = useState("");
+  const [siteKeywords, setSiteKeywords] = useState("");
+  const [siteAuthor, setSiteAuthor] = useState("");
+  const [footerAboutText, setFooterAboutText] = useState("");
+  const [footerCopyright, setFooterCopyright] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  
+  // Social links
+  const [twitterUrl, setTwitterUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [telegramUrl, setTelegramUrl] = useState("");
+  const [whatsappUrl, setWhatsappUrl] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
+
+  // Load current config
+  useEffect(() => {
+    fetch("/api/site-config")
+      .then((res) => res.json())
+      .then((data) => {
+        setSiteName(data.siteName || "");
+        setSiteDescription(data.siteDescription || "");
+        setSiteKeywords(data.siteKeywords || "");
+        setSiteAuthor(data.siteAuthor || "");
+        setFooterAboutText(data.footerAboutText || "");
+        setFooterCopyright(data.footerCopyright || "");
+        setContactEmail(data.contactEmail || "");
+        setTwitterUrl(data.twitterUrl || "");
+        setInstagramUrl(data.instagramUrl || "");
+        setYoutubeUrl(data.youtubeUrl || "");
+        setTelegramUrl(data.telegramUrl || "");
+        setWhatsappUrl(data.whatsappUrl || "");
+        setLinkedinUrl(data.linkedinUrl || "");
+      })
+      .catch(console.error);
+  }, []);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,90 +115,319 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const saveSiteConfig = async (key: string, value: string) => {
+    try {
+      const res = await fetch("/api/site-config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key, value }),
+      });
+      
+      if (!res.ok) {
+        throw new Error("Failed to save");
+      }
+    } catch (error) {
+      console.error("Error saving:", key, error);
+    }
+  };
+
+  const handleSaveSiteConfig = async () => {
+    setSavingSite(true);
+    
+    try {
+      await Promise.all([
+        saveSiteConfig("siteName", siteName),
+        saveSiteConfig("siteDescription", siteDescription),
+        saveSiteConfig("siteKeywords", siteKeywords),
+        saveSiteConfig("siteAuthor", siteAuthor),
+        saveSiteConfig("footerAboutText", footerAboutText),
+        saveSiteConfig("footerCopyright", footerCopyright),
+        saveSiteConfig("contactEmail", contactEmail),
+        saveSiteConfig("twitterUrl", twitterUrl),
+        saveSiteConfig("instagramUrl", instagramUrl),
+        saveSiteConfig("youtubeUrl", youtubeUrl),
+        saveSiteConfig("telegramUrl", telegramUrl),
+        saveSiteConfig("whatsappUrl", whatsappUrl),
+        saveSiteConfig("linkedinUrl", linkedinUrl),
+      ]);
+
+      toast({
+        title: "تم بنجاح",
+        description: "تم حفظ إعدادات الموقع بنجاح",
+      });
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "فشل في حفظ الإعدادات",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingSite(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">الإعدادات</h1>
-        <p className="text-muted-foreground">إدارة إعدادات الحساب</p>
+        <p className="text-muted-foreground">إدارة إعدادات الموقع والحساب</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Change Password */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              تغيير كلمة المرور
-            </CardTitle>
-            <CardDescription>قم بتغيير كلمة مرور حسابك</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleChangePassword} className="space-y-4">
+      <Tabs defaultValue="site" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="site">إعدادات الموقع</TabsTrigger>
+          <TabsTrigger value="social">وسائل التواصل</TabsTrigger>
+          <TabsTrigger value="account">حسابي</TabsTrigger>
+        </TabsList>
+
+        {/* Site Settings */}
+        <TabsContent value="site">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                إعدادات الموقع
+              </CardTitle>
+              <CardDescription>تخصيص معلومات الموقع</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="siteName">اسم الموقع</Label>
+                  <Input
+                    id="siteName"
+                    value={siteName}
+                    onChange={(e) => setSiteName(e.target.value)}
+                    placeholder="مدونة الطبيب"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="siteAuthor">المؤلف</Label>
+                  <Input
+                    id="siteAuthor"
+                    value={siteAuthor}
+                    onChange={(e) => setSiteAuthor(e.target.value)}
+                    placeholder="مدونة الطبيب"
+                  />
+                </div>
+              </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="current">كلمة المرور الحالية</Label>
-                <Input
-                  id="current"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  required
+                <Label htmlFor="siteDescription">وصف الموقع</Label>
+                <Textarea
+                  id="siteDescription"
+                  value={siteDescription}
+                  onChange={(e) => setSiteDescription(e.target.value)}
+                  placeholder="مدونة شخصية لطالب طب بشري..."
+                  rows={3}
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="new">كلمة المرور الجديدة</Label>
+                <Label htmlFor="siteKeywords">الكلمات المفتاحية (مفصولة بفواصل)</Label>
                 <Input
-                  id="new"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
+                  id="siteKeywords"
+                  value={siteKeywords}
+                  onChange={(e) => setSiteKeywords(e.target.value)}
+                  placeholder="طب, طب بشري, مقالات طبية"
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="confirm">تأكيد كلمة المرور</Label>
+                <Label htmlFor="contactEmail">بريد التواصل</Label>
                 <Input
-                  id="confirm"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
+                  id="contactEmail"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="admin@example.com"
                 />
               </div>
-              <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                تغيير كلمة المرور
+
+              <div className="space-y-2">
+                <Label htmlFor="footerAboutText">نص关于我们 في الفوتر</Label>
+                <Textarea
+                  id="footerAboutText"
+                  value={footerAboutText}
+                  onChange={(e) => setFooterAboutText(e.target.value)}
+                  placeholder="مدونة شخصية لطالب طب..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="footerCopyright">نص الحقوق</Label>
+                <Input
+                  id="footerCopyright"
+                  value={footerCopyright}
+                  onChange={(e) => setFooterCopyright(e.target.value)}
+                  placeholder="صنع بـ ❤️ لطلاب الطب"
+                />
+              </div>
+
+              <Button onClick={handleSaveSiteConfig} disabled={savingSite}>
+                {savingSite && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                حفظ إعدادات الموقع
               </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-        {/* Account Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5" />
-              معلومات الحساب
-            </CardTitle>
-            <CardDescription>معلومات حسابك الحالية</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-              <Mail className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">البريد الإلكتروني</p>
-                <p className="font-medium">admin@medblog.com</p>
+        {/* Social Links */}
+        <TabsContent value="social">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Heart className="h-5 w-5" />
+                وسائل التواصل
+              </CardTitle>
+              <CardDescription>روابط وسائل التواصل الاجتماعي</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="twitter">تويتر</Label>
+                  <Input
+                    id="twitter"
+                    value={twitterUrl}
+                    onChange={(e) => setTwitterUrl(e.target.value)}
+                    placeholder="https://twitter.com/username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="instagram">انستغرام</Label>
+                  <Input
+                    id="instagram"
+                    value={instagramUrl}
+                    onChange={(e) => setInstagramUrl(e.target.value)}
+                    placeholder="https://instagram.com/username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="youtube">يوتيوب</Label>
+                  <Input
+                    id="youtube"
+                    value={youtubeUrl}
+                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                    placeholder="https://youtube.com/@username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="telegram">تيليجرام</Label>
+                  <Input
+                    id="telegram"
+                    value={telegramUrl}
+                    onChange={(e) => setTelegramUrl(e.target.value)}
+                    placeholder="https://t.me/username"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="whatsapp">واتساب</Label>
+                  <Input
+                    id="whatsapp"
+                    value={whatsappUrl}
+                    onChange={(e) => setWhatsappUrl(e.target.value)}
+                    placeholder="https://wa.me/1234567890"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="linkedin">لينكدإن</Label>
+                  <Input
+                    id="linkedin"
+                    value={linkedinUrl}
+                    onChange={(e) => setLinkedinUrl(e.target.value)}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
-              <User className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="text-sm text-muted-foreground">الاسم</p>
-                <p className="font-medium">د. أحمد محمد</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+
+              <Button onClick={handleSaveSiteConfig} disabled={savingSite}>
+                {savingSite && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                حفظ روابط التواصل
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Account Settings */}
+        <TabsContent value="account">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Key className="h-5 w-5" />
+                  تغيير كلمة المرور
+                </CardTitle>
+                <CardDescription>قم بتغيير كلمة مرور حسابك</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleChangePassword} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="current">كلمة المرور الحالية</Label>
+                    <Input
+                      id="current"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="new">كلمة المرور الجديدة</Label>
+                    <Input
+                      id="new"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm">تأكيد كلمة المرور</Label>
+                    <Input
+                      id="confirm"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <Button type="submit" disabled={loading}>
+                    {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                    تغيير كلمة المرور
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  معلومات الحساب
+                </CardTitle>
+                <CardDescription>معلومات حسابك الحالية</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                  <Mail className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">البريد الإلكتروني</p>
+                    <p className="font-medium">admin@medblog.com</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                  <User className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">الاسم</p>
+                    <p className="font-medium">د. أحمد محمد</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

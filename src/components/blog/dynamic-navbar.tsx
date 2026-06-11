@@ -1,21 +1,51 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { navLinks, site as siteConfig } from "@/lib/site-config";
 
-export function Navbar() {
+interface NavLink {
+  href: string;
+  label: string;
+}
+
+interface NavbarConfig {
+  name: string;
+  logo: string;
+  navLinks: NavLink[];
+}
+
+export function DynamicNavbar({ 
+  defaultConfig 
+}: { 
+  defaultConfig: { site: { name: string; logo: string }; navLinks: NavLink[] } 
+}) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [config, setConfig] = useState(defaultConfig);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    fetch("/api/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.site) {
+          setConfig({
+            site: data.site,
+            navLinks: defaultConfig.navLinks, // Keep nav links from static config
+          });
+        }
+      })
+      .catch(console.error);
+  }, [defaultConfig]);
+
+  const siteName = config.site?.name || "الموقع";
+  const siteLogo = config.site?.logo || "/logo.svg";
+  const navLinks = config.navLinks || defaultConfig.navLinks;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
@@ -23,13 +53,13 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-lg text-primary">
           <Image 
-            src={siteConfig.logo} 
-            alt={siteConfig.name} 
+            src={siteLogo} 
+            alt={siteName} 
             width={28} 
             height={28}
             className="h-7 w-7"
           />
-          <span>{siteConfig.name}</span>
+          <span>{siteName}</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -62,7 +92,6 @@ export function Navbar() {
             </Button>
           )}
 
-          {/* Mobile menu toggle */}
           <Button
             variant="ghost"
             size="icon"

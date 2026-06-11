@@ -4,6 +4,8 @@ import { Heart } from "lucide-react";
 import { socialLinks, contactInfo, hasSocialLinks } from "@/lib/social-links";
 import { site, footer as footerConfig } from "@/lib/site-config";
 
+const { name: siteName, logo: siteLogo } = site;
+
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -15,13 +17,13 @@ export function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-2 font-bold text-lg mb-3">
               <Image 
-                src={site.logo} 
-                alt={site.name} 
+                src={siteLogo} 
+                alt={siteName} 
                 width={24} 
                 height={24}
                 className="h-6 w-6"
               />
-              <span>{site.name}</span>
+              <span>{siteName}</span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {footerConfig.aboutText}
@@ -138,7 +140,7 @@ export function Footer() {
 
         <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
           <p className="flex items-center justify-center gap-1">
-            © {currentYear} {site.name}. {footerConfig.copyright}
+            © {currentYear} {siteName}. {footerConfig.copyright}
           </p>
         </div>
       </div>
