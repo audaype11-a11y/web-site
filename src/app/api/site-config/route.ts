@@ -50,7 +50,12 @@ export async function PUT(request: NextRequest) {
       "telegramUrl",
       "whatsappUrl",
       "linkedinUrl",
-      "contactEmail"
+      "contactEmail",
+      // Profile keys
+      "doctorName",
+      "doctorBio",
+      "doctorImage",
+      "aboutPage"
     ];
 
     if (!allowedKeys.includes(key)) {

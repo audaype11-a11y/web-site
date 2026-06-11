@@ -47,6 +47,12 @@ export async function getSiteConfig() {
       },
       contact: {
         email: dbConfig.contactEmail || staticContact.email
+      },
+      profile: {
+        name: dbConfig.doctorName || staticSite.author,
+        bio: dbConfig.doctorBio || "",
+        image: dbConfig.doctorImage || "",
+        aboutPage: dbConfig.aboutPage || ""
       }
     };
 

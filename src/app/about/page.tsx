@@ -1,30 +1,36 @@
-import { db } from "@/lib/db";
-import { socialLinks, contactInfo, hasSocialLinks } from "@/lib/social-links";
-import { ExternalLink, Mail, Phone, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 import { Stethoscope } from "lucide-react";
+import { getSiteConfig } from "@/lib/get-site-config";
 
 // Force dynamic rendering
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "عني - مدونة الطبيب",
-  description: "تعرف على الطبيب والمدونة",
-};
+export async function generateMetadata() {
+  const config = await getSiteConfig();
+  const doctorName = config.profile?.name || "عنا";
+  const siteName = config.site?.name || "الموقع";
+  return {
+    title: `${doctorName} - ${siteName}`,
+    description: config.profile?.bio || "تعرف علينا",
+  };
+}
 
 export default async function AboutPage() {
-  // Get site config
-  const siteConfig = await db.siteConfig.findMany();
-  const configMap: Record<string, string> = {};
-  siteConfig.forEach((c) => {
-    configMap[c.key] = c.value;
-  });
-
-  const doctorName = configMap.doctorName || "د. أحمد محمد";
-  const doctorBio = configMap.doctorBio || "طالب طب بشري، أهتم بتبسيط المعلومات الطبية.";
-  const doctorImage = configMap.doctorImage || "";
-  const aboutPage = configMap.aboutPage || "";
+  const config = await getSiteConfig();
+  
+  const doctorName = config.profile?.name || "د. أحمد محمد";
+  const doctorBio = config.profile?.bio || "طالب طب بشري، أهتم بتبسيط المعلومات الطبية.";
+  const doctorImage = config.profile?.image || "";
+  const aboutPage = config.profile?.aboutPage || "";
+  
+  // Get social links from config
+  const social = config.social || {};
+  const contact = config.contact || {};
+  
+  const hasSocialLinks = () => {
+    return Object.values(social).some((link) => link && link.length > 0);
+  };
 
   return (
     <div className="py-12">
@@ -66,24 +72,15 @@ export default async function AboutPage() {
               <p className="text-muted-foreground mb-6">{doctorBio}</p>
 
               {/* Contact Info */}
-              {(contactInfo.email || contactInfo.phone) && (
+              {(contact.email) && (
                 <div className="flex flex-wrap justify-center gap-4 mb-6">
-                  {contactInfo.email && (
+                  {contact.email && (
                     <a
-                      href={`mailto:${contactInfo.email}`}
+                      href={`mailto:${contact.email}`}
                       className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Mail className="h-4 w-4" />
-                      {contactInfo.email}
-                    </a>
-                  )}
-                  {contactInfo.phone && (
-                    <a
-                      href={`tel:${contactInfo.phone}`}
-                      className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <Phone className="h-4 w-4" />
-                      {contactInfo.phone}
+                      {contact.email}
                     </a>
                   )}
                 </div>
@@ -92,9 +89,9 @@ export default async function AboutPage() {
               {/* Social Links */}
               {hasSocialLinks() && (
                 <div className="flex flex-wrap justify-center gap-3">
-                  {socialLinks.twitter && (
+                  {social.twitter && (
                     <a
-                      href={socialLinks.twitter}
+                      href={social.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors text-sm"
@@ -105,9 +102,9 @@ export default async function AboutPage() {
                       تويتر
                     </a>
                   )}
-                  {socialLinks.instagram && (
+                  {social.instagram && (
                     <a
-                      href={socialLinks.instagram}
+                      href={social.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 hover:bg-pink-200 dark:hover:bg-pink-900/50 transition-colors text-sm"
@@ -118,9 +115,9 @@ export default async function AboutPage() {
                       انستغرام
                     </a>
                   )}
-                  {socialLinks.youtube && (
+                  {social.youtube && (
                     <a
-                      href={socialLinks.youtube}
+                      href={social.youtube}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors text-sm"
@@ -131,9 +128,9 @@ export default async function AboutPage() {
                       يوتيوب
                     </a>
                   )}
-                  {socialLinks.telegram && (
+                  {social.telegram && (
                     <a
-                      href={socialLinks.telegram}
+                      href={social.telegram}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-sm"
@@ -144,9 +141,9 @@ export default async function AboutPage() {
                       تيليجرام
                     </a>
                   )}
-                  {socialLinks.linkedin && (
+                  {social.linkedin && (
                     <a
-                      href={socialLinks.linkedin}
+                      href={social.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors text-sm"
@@ -157,9 +154,9 @@ export default async function AboutPage() {
                       لينكد إن
                     </a>
                   )}
-                  {socialLinks.whatsapp && (
+                  {social.whatsapp && (
                     <a
-                      href={socialLinks.whatsapp}
+                      href={social.whatsapp}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-sm"

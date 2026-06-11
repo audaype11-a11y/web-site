@@ -37,6 +37,12 @@ export async function GET() {
       },
       contact: {
         email: dbConfig.contactEmail || staticContact.email
+      },
+      profile: {
+        name: dbConfig.doctorName || "د. أحمد محمد",
+        bio: dbConfig.doctorBio || "طالب طب بشري، أهتم بتبسيط المعلومات الطبية.",
+        image: dbConfig.doctorImage || "",
+        aboutPage: dbConfig.aboutPage || ""
       }
     };
 
@@ -48,7 +54,13 @@ export async function GET() {
       site: staticSite,
       footer: staticFooter,
       social: staticSocial,
-      contact: staticContact
+      contact: staticContact,
+      profile: {
+        name: "د. أحمد محمد",
+        bio: "طالب طب بشري، أهتم بتبسيط المعلومات الطبية.",
+        image: "",
+        aboutPage: ""
+      }
     });
   }
 }

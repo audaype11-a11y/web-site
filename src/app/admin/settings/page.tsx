@@ -34,6 +34,12 @@ export default function AdminSettingsPage() {
   const [telegramUrl, setTelegramUrl] = useState("");
   const [whatsappUrl, setWhatsappUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  
+  // Profile
+  const [doctorName, setDoctorName] = useState("");
+  const [doctorBio, setDoctorBio] = useState("");
+  const [doctorImage, setDoctorImage] = useState("");
+  const [aboutPage, setAboutPage] = useState("");
 
   // Load current config
   useEffect(() => {
@@ -53,6 +59,10 @@ export default function AdminSettingsPage() {
         setTelegramUrl(data.telegramUrl || "");
         setWhatsappUrl(data.whatsappUrl || "");
         setLinkedinUrl(data.linkedinUrl || "");
+        setDoctorName(data.doctorName || "");
+        setDoctorBio(data.doctorBio || "");
+        setDoctorImage(data.doctorImage || "");
+        setAboutPage(data.aboutPage || "");
       })
       .catch(console.error);
   }, []);
@@ -149,11 +159,15 @@ export default function AdminSettingsPage() {
         saveSiteConfig("telegramUrl", telegramUrl),
         saveSiteConfig("whatsappUrl", whatsappUrl),
         saveSiteConfig("linkedinUrl", linkedinUrl),
+        saveSiteConfig("doctorName", doctorName),
+        saveSiteConfig("doctorBio", doctorBio),
+        saveSiteConfig("doctorImage", doctorImage),
+        saveSiteConfig("aboutPage", aboutPage),
       ]);
 
       toast({
         title: "تم بنجاح",
-        description: "تم حفظ إعدادات الموقع بنجاح",
+        description: "تم حفظ الإعدادات بنجاح",
       });
     } catch (error) {
       toast({
@@ -176,6 +190,7 @@ export default function AdminSettingsPage() {
       <Tabs defaultValue="site" className="space-y-4">
         <TabsList>
           <TabsTrigger value="site">إعدادات الموقع</TabsTrigger>
+          <TabsTrigger value="profile">ملفي الشخصي</TabsTrigger>
           <TabsTrigger value="social">وسائل التواصل</TabsTrigger>
           <TabsTrigger value="account">حسابي</TabsTrigger>
         </TabsList>
@@ -268,6 +283,106 @@ export default function AdminSettingsPage() {
               <Button onClick={handleSaveSiteConfig} disabled={savingSite}>
                 {savingSite && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
                 حفظ إعدادات الموقع
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Profile Settings */}
+        <TabsContent value="profile">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                ملفي الشخصي
+              </CardTitle>
+              <CardDescription>معلوماتي الشخصية التي تظهر في صفحة عنا</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="doctorName">الاسم</Label>
+                <Input
+                  id="doctorName"
+                  value={doctorName}
+                  onChange={(e) => setDoctorName(e.target.value)}
+                  placeholder="د. أحمد محمد"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="doctorBio">النبذة التعريفية</Label>
+                <Textarea
+                  id="doctorBio"
+                  value={doctorBio}
+                  onChange={(e) => setDoctorBio(e.target.value)}
+                  placeholder="طالب طب بشري، أهتم بتبسيط المعلومات الطبية..."
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="doctorImage">الصورة الشخصية</Label>
+                <div className="flex gap-4 items-start">
+                  <div className="flex-1">
+                    <Input
+                      id="doctorImage"
+                      value={doctorImage}
+                      onChange={(e) => setDoctorImage(e.target.value)}
+                      placeholder="ارفع صورة أو الصق رابط الصورة"
+                    />
+                    <Input
+                      id="doctorImageUpload"
+                      type="file"
+                      accept="image/*"
+                      className="mt-2 cursor-pointer"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        
+                        const formData = new FormData();
+                        formData.append("file", file);
+                        
+                        try {
+                          const res = await fetch("/api/upload", {
+                            method: "POST",
+                            body: formData,
+                          });
+                          const data = await res.json();
+                          if (data.url) {
+                            setDoctorImage(data.url);
+                            toast({ title: "تم", description: "تم رفع الصورة بنجاح" });
+                          } else if (data.error) {
+                            toast({ title: "خطأ", description: data.error, variant: "destructive" });
+                          }
+                        } catch (err) {
+                          toast({ title: "خطأ", description: "فشل في رفع الصورة", variant: "destructive" });
+                        }
+                      }}
+                    />
+                  </div>
+                  {doctorImage && (
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
+                      <img src={doctorImage} alt="الصورة الشخصية" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="aboutPage">محتوى صفحة عنا (HTML)</Label>
+                <Textarea
+                  id="aboutPage"
+                  value={aboutPage}
+                  onChange={(e) => setAboutPage(e.target.value)}
+                  placeholder="<p>محتوى إضافي لصفحة عنا...</p>"
+                  rows={6}
+                  className="font-mono text-sm"
+                />
+              </div>
+
+              <Button onClick={handleSaveSiteConfig} disabled={savingSite}>
+                {savingSite && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                حفظ ملفي الشخصي
               </Button>
             </CardContent>
           </Card>
